@@ -1,0 +1,11 @@
+[Unit]
+Description=Private docker registry side kick
+BindsTo=private-docker-registry.service
+After=private-docker-registry.service
+
+[Service]
+ExecStart=/bin/sh -c "while true; do etcdctl set /services/private-docker-registry '{ \"host\": \"%H\", \"port\": 5000 }' --ttl 60;sleep 45;done"
+ExecStop=/usr/bin/etcdctl rm /services/private-docker-registry
+
+[X-Fleet]
+MachineOf=private-docker-registry.service

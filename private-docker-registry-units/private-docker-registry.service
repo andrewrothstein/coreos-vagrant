@@ -12,5 +12,5 @@ KillMode=none
 ExecStartPre=-/usr/bin/docker kill private-docker-registry
 ExecStartPre=-/usr/bin/docker rm private-docker-registry
 ExecStartPre=/usr/bin/docker pull colegleason/docker-private-registry
-ExecStart=/usr/bin/docker run --name private-docker-registry -e ETCD_ENDPOINT=${COREOS_PRIVATE_IPV4}:4001 -p 80:80 colegleason/docker-private-registry
+ExecStart=/usr/bin/docker run --name private-docker-registry -e ETCD_ENDPOINT=${COREOS_PRIVATE_IPV4}:4001 -p 5000:5000 colegleason/docker-private-registry
 ExecStop=/usr/bin/docker stop private-docker-registry docker-registry

@@ -1,0 +1,14 @@
+[Unit]
+Description=Docker image builder
+After=docker.service
+After=etcd.service
+Requires=docker.service
+Requires=etcd.service
+
+[Service]
+EnvironmentFile=/etc/environment
+TimeoutStartSec=0
+KillMode=none
+ExecStartPre=/usr/bin/docker pull wch1/r-shiny-server
+ExecStartPre=/usr/bin/git clone https://github.com/andrewrothstein/dockr
+ExecStart=cd docker && /usr/bin/docker build -t `etcdctl get services/private-docker-registry`/andrewrothstein/dockr .

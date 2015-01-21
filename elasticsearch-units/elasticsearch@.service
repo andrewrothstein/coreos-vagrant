@@ -8,7 +8,7 @@ TimeoutSec=180
 EnvironmentFile=/etc/environment
 
 ExecStartPre=/usr/bin/mkdir -p /data/elasticsearch
-ExecStartPre=/usr/bin/docker pull dockerfile/elasticsearch
+ExecStartPre=/usr/bin/docker pull andrewrothstein/docker-elasticsearch
 
 ExecStart=/bin/bash -c '\
  curl -f ${COREOS_PRIVATE_IPV4}:4001/v2/keys/services/elasticsearch; \
@@ -26,7 +26,7 @@ ExecStart=/bin/bash -c '\
   --publish 9200:9200 \
   --publish 9300:9300 \
   --volume /data/elasticsearch:/data \
-  dockerfile/elasticsearch \
+  andrewrothstein/docker-elasticsearch \
   /elasticsearch/bin/elasticsearch \
   --node.name=%p-%i \
   --cluster.name=escluster \

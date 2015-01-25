@@ -1,0 +1,23 @@
+[Unit]
+Description=SkyDNS
+After=docker.service
+After=etcd.service
+Requires=docker.service
+Requires=etcd.service
+
+[Service]
+TimeoutStartSec=10min
+KillMode=none
+EnvironmentFile=/etc/environment
+ExecStartPre=/usr/bin/docker pull andrewrothstein/skydns
+ExecStartPre=-/usr/bin/docker kill %p
+ExecStartPre=-/usr/bin/docker rm %p
+ExecStart=/usr/bin/docker run --name %p \
+ -e "ETCD_MACHINES=http://${COREOS_PRIVATE_IPV4}:4001" \
+ -p 53:53 \
+ andrewrothstein/skydns
+
+ExecStop=/usr/bin/docker kill %p
+
+[X-Fleet]
+Conflicts=skydns@*.service

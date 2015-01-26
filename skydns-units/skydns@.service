@@ -6,18 +6,24 @@ Requires=docker.service
 Requires=etcd.service
 
 [Service]
-TimeoutStartSec=10min
-KillMode=none
 EnvironmentFile=/etc/environment
+
+Restart=always
+RestartSec=10s
+Type=notify
+NotifyAccess=all
+TimeoutStartSec=120
+TimeoutStopSec=15
+
+ExecStartPre=/usr/bin/docker run --rm -v /opt/bin:/opt/bin ibuildthecloud/systemd-docker
 ExecStartPre=/usr/bin/docker pull andrewrothstein/skydns
-ExecStartPre=-/usr/bin/docker kill %p
-ExecStartPre=-/usr/bin/docker rm %p
-ExecStart=/usr/bin/docker run --name %p \
+ExecStart=/opt/bin/systemd-docker run --rm --name %p \
  -e "ETCD_MACHINES=http://${COREOS_PRIVATE_IPV4}:4001" \
  -p 53:53 \
  andrewrothstein/skydns
 
-ExecStop=/usr/bin/docker kill %p
+[Install]
+WantedBy=multi-user.target
 
 [X-Fleet]
 Conflicts=skydns@*.service

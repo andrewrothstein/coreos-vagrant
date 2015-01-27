@@ -12,11 +12,12 @@ Restart=always
 RestartSec=10s
 Type=notify
 NotifyAccess=all
-TimeoutStartSec=120
+TimeoutStartSec=1200
 TimeoutStopSec=15
 
 ExecStartPre=/usr/bin/docker run --rm -v /opt/bin:/opt/bin ibuildthecloud/systemd-docker
 ExecStartPre=/usr/bin/docker pull andrewrothstein/skydns
+
 ExecStart=/opt/bin/systemd-docker run --rm --name %p \
  -e "ETCD_MACHINES=http://${COREOS_PRIVATE_IPV4}:4001" \
  -p 53:53 \

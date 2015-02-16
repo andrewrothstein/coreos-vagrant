@@ -8,6 +8,9 @@ Requires=etcd.service
 [Service]
 EnvironmentFile=/etc/environment
 
+Environment="ENV=drewfus"
+Environment="CLUSTER=dev"
+
 Restart=always
 RestartSec=10s
 Type=notify
@@ -18,7 +21,7 @@ TimeoutStopSec=15
 ExecStartPre=/usr/bin/docker run --rm -v /opt/bin:/opt/bin ibuildthecloud/systemd-docker
 ExecStartPre=/usr/bin/docker pull andrewrothstein/skydns
 
-ExecStartPre=/usr/bin/etcdctl set /skydns/local/drewfus/hosts/%m '{\"host\":\"${COREOS_PRIVATE_IPV4}\"}'
+ExecStartPre=/usr/bin/etcdctl set /skydns/local/${ENV}/hosts/%m '{\"host\":\"${COREOS_PRIVATE_IPV4}\"}'
 
 ExecStartPre-=/usr/bin/docker rm -f %p
 ExecStart=/opt/bin/systemd-docker run \
@@ -26,10 +29,10 @@ ExecStart=/opt/bin/systemd-docker run \
  --name %p \
  -p 53:53/udp \
  -e ETCD_MACHINES=http://${COREOS_PRIVATE_IPV4}:4001 \
- -e SKYDNS_DOMAIN=drewfus.local \
+ -e SKYDNS_DOMAIN=${ENV}.local \
 andrewrothstein/skydns \
  -addr 0.0.0.0:53 \
- -local "%m.hosts.drewfus.local"
+ -local "%m.hosts.${ENV}.local"
 
 ExecStopPost=/usr/bin/etcdctl rm /skydns/local/drewfus/hosts/%m
 

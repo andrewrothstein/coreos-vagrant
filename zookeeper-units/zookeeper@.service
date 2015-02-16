@@ -1,0 +1,40 @@
+[Unit]
+Description=Zookeeper service
+After=skydns.service
+After=docker.service
+After=etcd.service
+Requires=skydns.service
+Requires=docker.service
+Requires=etcd.service
+
+[Service]
+EnvironmentFile=/etc/environment
+
+Restart=always
+RestartSec=10s
+Type=notify
+NotifyAccess=all
+TimeoutStartSec=1200
+TimeoutStopSec=15
+
+ExecStartPre=/usr/bin/mkdir -p /data/zookeeper
+ExecStartPre=/usr/bin/docker run --rm -v /opt/bin:/opt/bin ibuildthecloud/systemd-docker
+ExecStartPre=/usr/bin/docker pull andrewrothstein/docker-zookeeper
+
+ExecStart=/opt/bin/systemd-docker run --rm \
+ --name %p-%i \
+ --publish 2181:2181 \
+ --publish 2888:2888 \
+ --publish 3888:3888 \
+ --volume /data/zookeeper:/zk-data \
+ --env ZK_MYID=%i \
+ --dns=${COREOS_PRIVATE_IPV4} \
+ andrewrothstein/docker-zookeeper
+
+ExecStop=/usr/bin/docker stop %p-%i
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+X-Conflicts=%p@*.service

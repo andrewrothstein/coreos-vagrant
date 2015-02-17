@@ -1,17 +1,15 @@
-#!/bin/bash
+#!/bin/bash -x
 
 ENV=drewfus
 CLUSTER=dev
 
-echo confirm that each instance knows its own id from within its container...
-echo $(fleetctl ssh zookeeper\@1.service docker exec -ti zookeeper-1 cat /zk-data/myid)
-echo $(fleetctl ssh zookeeper\@2.service docker exec -ti zookeeper-2 cat /zk-data/myid)
-echo $(fleetctl ssh zookeeper\@3.service docker exec -ti zookeeper-3 cat /zk-data/myid)
+echo "check that the zookeeper myids are set correctly"
+fleetctl ssh zookeeper\@1.service docker exec -ti zookeeper-1 cat /zk-data/myid
+fleetctl ssh zookeeper\@2.service docker exec -ti zookeeper-2 cat /zk-data/myid
+fleetctl ssh zookeeper\@3.service docker exec -ti zookeeper-3 cat /zk-data/myid
 
-echo the ${ENV}.${CLUSTER} cluster in skydns:
+echo "what's in etcd?"
 etcdctl ls /skydns/local/${ENV}/${CLUSTER}/ --recursive 
-echo
-echo ${ENV}.${CLUSTER}/zookeeper-1 in skydns:
 etcdctl get /skydns/local/${ENV}/${CLUSTER}/zookeeper-1
 
 echo "checking DNS resolution for zookeeper-%i from a separate container on host zookeeper@.%i..."

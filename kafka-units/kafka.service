@@ -1,0 +1,42 @@
+[Unit]
+Description=kafka
+After=docker.service
+Requires=docker.service
+
+After=zookeeper\@1.service
+Requires=zookeeper\@1.service
+After=zookeeper\@2.service
+Requires=zookeeper\@2.service
+After=zookeeper\@3.service
+Requires=zookeeper\@3.service
+
+[Service]
+EnvironmentFile=/etc/environment
+Environment="ENV=drewfus"
+Environment="CLUSTER=dev"
+
+Type=Simple
+
+Restart=always
+RestartSec=10s
+
+TimeoutStartSec=0
+TimeoutStopSec=15
+
+# configure host storage directory
+
+# pull app docker image
+ExecStartPre=/usr/bin/docker pull andrewrothstein/docker-kafka:latest
+
+# install systemd-docker
+ExecStartPre=/usr/bin/docker run --rm -v /opt/bin:/opt/bin ibuildthecloud/systemd-docker
+
+# bombs away
+ExecStart=/usr/bin/docker run --name kafka \
+ -p 6667:6667 \
+ -e KAFKA_ADVERTISED_PORT=6667 \
+ -e KAFKA_ZOOKEEPER_CONNECT=zookeeper.${CLUSTER}.${ENV}.local \
+ -e KAFKA_BROKER_ID=100 \
+ andrewrothstein/docker-kafka
+
+ExecStop=/usr/bin/docker stop kafka

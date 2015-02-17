@@ -9,18 +9,28 @@ Requires=etcd.service
 
 [Service]
 EnvironmentFile=/etc/environment
+Environment="ENV=drewfus"
+Environment="CLUSTER=dev"
+
+Type=notify
+NotifyAccess=all
 
 Restart=always
 RestartSec=10s
-Type=notify
-NotifyAccess=all
-TimeoutStartSec=1200
+
+TimeoutStartSec=0
 TimeoutStopSec=15
 
+# configure host storage directory
 ExecStartPre=/usr/bin/mkdir -p /data/zookeeper
-ExecStartPre=/usr/bin/docker run --rm -v /opt/bin:/opt/bin ibuildthecloud/systemd-docker
+
+# pull app docker image
 ExecStartPre=/usr/bin/docker pull andrewrothstein/docker-zookeeper
 
+# install systemd-docker
+ExecStartPre=/usr/bin/docker run --rm -v /opt/bin:/opt/bin ibuildthecloud/systemd-docker
+
+# bombs away
 ExecStart=/opt/bin/systemd-docker run --rm \
  --name %p-%i \
  --publish 2181:2181 \
@@ -28,8 +38,11 @@ ExecStart=/opt/bin/systemd-docker run --rm \
  --publish 3888:3888 \
  --volume /data/zookeeper:/zk-data \
  --env ZK_MYID=%i \
+ --env ENV=${ENV} \
+ --env CLUSTER=${CLUSTER} \
  --dns=${COREOS_PRIVATE_IPV4} \
- andrewrothstein/docker-zookeeper
+ --dns-search=${CLUSTER}.${ENV}.local \
+andrewrothstein/docker-zookeeper
 
 ExecStop=/usr/bin/docker stop %p-%i
 

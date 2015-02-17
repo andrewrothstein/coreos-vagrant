@@ -33,9 +33,9 @@ ExecStartPre=/usr/bin/docker run --rm -v /opt/bin:/opt/bin ibuildthecloud/system
 # bombs away
 ExecStart=/opt/bin/systemd-docker run --rm \
  --name %p-%i \
- --publish 2181:2181 \
- --publish 2888:2888 \
- --publish 3888:3888 \
+ --publish ${COREOS_PRIVATE_IPV4}:2181:2181 \
+ --publish ${COREOS_PRIVATE_IPV4}:2888:2888 \
+ --publish ${COREOS_PRIVATE_IPV4}:3888:3888 \
  --volume /data/zookeeper:/zk-data \
  --env ZK_MYID=%i \
  --env ENV=${ENV} \

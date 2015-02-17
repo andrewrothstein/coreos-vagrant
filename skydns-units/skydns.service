@@ -27,7 +27,8 @@ ExecStartPre-=/usr/bin/docker rm -f %p
 ExecStart=/opt/bin/systemd-docker run \
  --rm \
  --name %p \
- -p 53:53/udp \
+ -p ${COREOS_PRIVATE_IPV4}:53:53/tcp \
+ -p ${COREOS_PRIVATE_IPV4}:53:53/udp \
  -e ETCD_MACHINES=http://${COREOS_PRIVATE_IPV4}:4001 \
  -e SKYDNS_DOMAIN=${CLUSTER}.${ENV}.local \
 andrewrothstein/skydns \

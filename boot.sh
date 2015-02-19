@@ -1,6 +1,6 @@
 #!/bin/bash
 
 vagrant up
-skydns-units/boot.sh
-zookeeper-units/boot.sh
+cd skydns-units; ./boot.sh; cd ..
+cd zookeeper-units; ./boot.sh; cd ..
 

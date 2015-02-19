@@ -1,10 +1,10 @@
 #!/bin/bash
 
 echo shutting down zookeeper...
-zookeeper-units/destroy.sh
+cd zookeeper-units; ./destroy.sh; cd ..
 
 echo shutting down skydns...
-skydns-units/destroy.sh
+cd skydns-units; ./destroy.sh; cd ..
 
 vagrant destroy -f
 rm -f ~/.fleetctl/known_hosts

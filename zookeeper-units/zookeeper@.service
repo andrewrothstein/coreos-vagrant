@@ -33,6 +33,7 @@ ExecStartPre=/usr/bin/docker run --rm -v /opt/bin:/opt/bin ibuildthecloud/system
 # bombs away
 ExecStart=/opt/bin/systemd-docker run --rm \
  --name %p-%i \
+ --hostname=%p-%i.${CLUSTER}.${ENV}.local \
  --publish ${COREOS_PRIVATE_IPV4}:2181:2181 \
  --publish ${COREOS_PRIVATE_IPV4}:2888:2888 \
  --publish ${COREOS_PRIVATE_IPV4}:3888:3888 \

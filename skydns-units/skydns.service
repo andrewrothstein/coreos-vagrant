@@ -11,19 +11,25 @@ EnvironmentFile=/etc/environment
 Environment="ENV=drewfus"
 Environment="CLUSTER=dev"
 
-Restart=always
-RestartSec=10s
 Type=notify
 NotifyAccess=all
-TimeoutStartSec=1200
+
+Restart=always
+RestartSec=10s
+
+TimeoutStartSec=0
 TimeoutStopSec=15
 
-ExecStartPre=/usr/bin/docker run --rm -v /opt/bin:/opt/bin ibuildthecloud/systemd-docker
+# pull app docker image
 ExecStartPre=/usr/bin/docker pull andrewrothstein/skydns
 
-ExecStartPre=/usr/bin/etcdctl set /skydns/local/${ENV}/${CLUSTER}/hosts/%m '{\"host\":\"${COREOS_PRIVATE_IPV4}\"}'
+# install systemd-docker
+ExecStartPre=/usr/bin/docker run --rm -v /opt/bin:/opt/bin ibuildthecloud/systemd-docker
 
-ExecStartPre-=/usr/bin/docker rm -f %p
+ExecStartPre=/usr/bin/etcdctl set \
+ /skydns/local/${ENV}/${CLUSTER}/hosts/%m \
+ '{\"host\":\"${COREOS_PRIVATE_IPV4}\"}'
+
 ExecStart=/opt/bin/systemd-docker run \
  --rm \
  --name %p \
@@ -35,7 +41,9 @@ andrewrothstein/skydns \
  -addr 0.0.0.0:53 \
  -local "%m.hosts.${CLUSTER}.${ENV}.local"
 
-ExecStopPost=/usr/bin/etcdctl rm /skydns/local/${ENV}/${CLUSTER}/hosts/%m
+# boy scouts clean up the camp site
+ExecStopPost=/usr/bin/etcdctl rm \
+ /skydns/local/${ENV}/${CLUSTER}/hosts/%m
 
 [Install]
 WantedBy=multi-user.target

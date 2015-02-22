@@ -1,4 +1,7 @@
 #!/bin/bash
+echo shutting down kafka...
+cd kafka-units; ./destroy.sh; cd ..
+
 echo shutting down mesos...
 cd mesos-units; ./destroy.sh; cd ..
 

@@ -1,0 +1,33 @@
+[Unit]
+Description=Kafka Presence
+BindTo=kafka@%i.service
+After=kafka@%i.service
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=30
+
+EnvironmentFile=/etc/environment
+
+Environment="ENV=drewfus"
+Environment="CLUSTER=dev"
+
+Environment="KAFKA_CLIENT_PORT=9092"
+
+ExecStartPre=/usr/bin/printf "Announcing: /skydns/local/${ENV}/${CLUSTER}/kafka-%i:\n"
+ExecStartPre=/usr/bin/etcdctl set --ttl 60 /skydns/local/${ENV}/${CLUSTER}/kafka-%i \
+ "{\"host\":\"%m.hosts.${CLUSTER}.${ENV}.local\",\
+   \"port\":${KAFKA_CLIENT_PORT}}"
+ExecStartPre=/usr/bin/etcdctl get /skydns/local/${ENV}/${CLUSTER}/kafka-%i
+
+ExecStartPre=/usr/bin/printf "Announcing: /skydns/local/${ENV}/${CLUSTER}/kafka/%i:\n"
+ExecStartPre=/usr/bin/etcdctl set --ttl 60 /skydns/local/${ENV}/${CLUSTER}/kafka/%i \
+ "{\"host\":\"%m.hosts.${CLUSTER}.${ENV}.local\",\
+   \"port\":${KAFKA_CLIENT_PORT}}"
+ExecStartPre=/usr/bin/etcdctl get /skydns/local/${ENV}/${CLUSTER}/kafka/%i
+
+ExecStart=/usr/bin/printf "finished %p announcements\n"
+
+[X-Fleet]
+MachineOf=kafka@%i.service

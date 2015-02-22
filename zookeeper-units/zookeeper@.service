@@ -43,7 +43,7 @@ ExecStart=/opt/bin/systemd-docker run --rm \
  --env CLUSTER=${CLUSTER} \
  --dns=${COREOS_PRIVATE_IPV4} \
  --dns-search=${CLUSTER}.${ENV}.local \
-andrewrothstein/docker-zookeeper
+ andrewrothstein/docker-zookeeper
 
 ExecStop=/usr/bin/docker stop %p-%i
 

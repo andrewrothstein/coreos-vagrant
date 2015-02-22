@@ -1,0 +1,43 @@
+[Unit]
+Description=kafka
+After=docker.service
+After=skydns.service
+
+Requires=docker.service
+REquires=skydns.service
+
+[Service]
+EnvironmentFile=/etc/environment
+Environment="ENV=drewfus"
+Environment="CLUSTER=dev"
+Environment="KAFKA_LOG_DIR=/data/kafka/log"
+
+Type=Simple
+
+Restart=always
+RestartSec=10s
+
+TimeoutStartSec=0
+TimeoutStopSec=15
+
+# configure host storage directory
+ExecStartPre=/usr/bin/mkdir -p ${KAFKA_LOG_DIR}
+
+# pull app docker image
+ExecStartPre=-/usr/bin/docker pull andrewrothstein/docker-kafka
+
+# pull app docker image
+ExecStartPre=-/usr/bin/docker pull andrewrothstein/docker-kafka:latest
+
+# install systemd-docker
+ExecStartPre=/usr/bin/docker run --rm -v /opt/bin:/opt/bin ibuildthecloud/systemd-docker
+
+# bombs away
+ExecStart=/usr/bin/docker run --rm \
+ --name kafka-broker-%i \
+ -p 9092:9092 \
+ --volume ${KAFKA_LOG_DIR}:${KAFKA_LOG_DIR} \
+ -e KAFKA_BROKER_ID=%i \
+ -e KAFKA_LOG_DIRS=${KAFKA_LOG_DIR} \
+ -e KAFKA_ZK=zk://zookeeper.${CLUSTER}.${ENV}.local/kafka/${CLUSTER}/${ENV} \
+ andrewrothstein/docker-kafka

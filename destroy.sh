@@ -1,4 +1,6 @@
 #!/bin/bash
+echo shutting down mesos...
+cd mesos-units; ./destroy.sh; cd ..
 
 echo shutting down zookeeper...
 cd zookeeper-units; ./destroy.sh; cd ..

@@ -21,7 +21,7 @@ TimeoutStartSec=0
 TimeoutStopSec=15
 
 # pull app docker image
-ExecStartPre=/usr/bin/docker pull andrewrothstein/skydns
+ExecStartPre=-/usr/bin/docker pull andrewrothstein/skydns
 
 # install systemd-docker
 ExecStartPre=/usr/bin/docker run --rm -v /opt/bin:/opt/bin ibuildthecloud/systemd-docker

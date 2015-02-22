@@ -23,7 +23,7 @@ TimeoutStopSec=15
 ExecStartPre=/usr/bin/mkdir -p /data/mesos-master/{work,log}
 
 # pull app docker image
-ExecStartPre=/usr/bin/docker pull andrewrothstein/docker-mesos
+ExecStartPre=-/usr/bin/docker pull andrewrothstein/docker-mesos
 
 # install systemd-docker
 ExecStartPre=/usr/bin/docker run --rm -v /opt/bin:/opt/bin ibuildthecloud/systemd-docker

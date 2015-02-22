@@ -25,7 +25,7 @@ TimeoutStopSec=15
 ExecStartPre=/usr/bin/mkdir -p /data/zookeeper
 
 # pull app docker image
-ExecStartPre=/usr/bin/docker pull andrewrothstein/docker-zookeeper
+ExecStartPre=-/usr/bin/docker pull andrewrothstein/docker-zookeeper
 
 # install systemd-docker
 ExecStartPre=/usr/bin/docker run --rm -v /opt/bin:/opt/bin ibuildthecloud/systemd-docker

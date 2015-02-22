@@ -45,8 +45,6 @@ ExecStart=/opt/bin/systemd-docker run --rm \
  --dns-search=${CLUSTER}.${ENV}.local \
  andrewrothstein/docker-zookeeper
 
-ExecStop=/usr/bin/docker stop %p-%i
-
 [Install]
 WantedBy=multi-user.target
 

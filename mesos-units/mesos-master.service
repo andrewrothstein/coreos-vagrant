@@ -31,6 +31,8 @@ ExecStartPre=/usr/bin/docker run --rm -v /opt/bin:/opt/bin ibuildthecloud/system
 ExecStart=/opt/bin/systemd-docker run --rm \
  --name mesos-master \
  --publish 5050:5050 \
+ --volume /data/mesos-master/work:/data/mesos-master/work \
+ --volume /data/mesos-master/log:/data/mesos-master/log \
  --dns=${COREOS_PRIVATE_IPV4} \
  --dns-search=${CLUSTER}.${ENV}.local \
  andrewrothstein/docker-mesos mesos-master \

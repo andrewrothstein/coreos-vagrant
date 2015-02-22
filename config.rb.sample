@@ -40,6 +40,9 @@ end
 # uncomment the necessary lines, leaving the $, and replace everything
 # after the equals sign..
 
+# Size of the CoreOS cluster created by Vagrant
+$num_instances=3
+
 # Change basename of the VM
 # The default value is "core", which results in VMs named starting with
 # "core-01" through to "core-${num_instances}".
@@ -74,9 +77,9 @@ end
 #$share_home=false
 
 # Customize VMs
-#$vm_gui = false
-#$vm_memory = 1024
-#$vm_cpus = 1
+$vm_gui = false
+$vm_memory = 2048
+$vm_cpus = 1
 #$vb_cpuexecutioncap = 100
 
 # Share additional folders to the CoreOS VMs

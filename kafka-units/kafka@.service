@@ -4,7 +4,7 @@ After=docker.service
 After=skydns.service
 
 Requires=docker.service
-REquires=skydns.service
+Requires=skydns.service
 
 [Service]
 EnvironmentFile=/etc/environment

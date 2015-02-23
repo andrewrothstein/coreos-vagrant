@@ -28,12 +28,22 @@ ExecStartPre=-/usr/bin/docker pull andrewrothstein/docker-kafka
 
 # pull app docker image
 ExecStartPre=-/usr/bin/docker pull andrewrothstein/docker-kafka:latest
+ExecStartPre=-/usr/bin/docker pull andrewrothstein/docker-zookeeper:latest
 
 # install systemd-docker
 ExecStartPre=/usr/bin/docker run --rm -v /opt/bin:/opt/bin ibuildthecloud/systemd-docker
 
+# make the ZK location...
+ExecStartPre=/opt/bin/systemd-docker run --rm \
+ --dns=${COREOS_PRIVATE_IPV4} \
+ --dns-search=${CLUSTER}.${ENV}.local \
+ andrewrothstein/docker-zookeeper \
+ /opt/zookeeper/bin/zkCli.sh \
+  -z zookeeper.${CLUSTER}.${ENV}.local:2818 \
+  -cmd "makepath /kafka/${CLUSTER}/${ENV}"
+
 # bombs away
-ExecStart=/usr/bin/docker run --rm \
+ExecStart=/opt/bin/systemd-docker run --rm \
  --name kafka-broker-%i \
  --hostname=%p-%i.${CLUSTER}.${ENV}.local \
  --publish 9092:9092 \

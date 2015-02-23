@@ -35,11 +35,12 @@ ExecStartPre=/usr/bin/docker run --rm -v /opt/bin:/opt/bin ibuildthecloud/system
 # bombs away
 ExecStart=/usr/bin/docker run --rm \
  --name kafka-broker-%i \
- -p 9092:9092 \
+ --hostname=%p-%i.${CLUSTER}.${ENV}.local \
+ --publish 9092:9092 \
  --volume ${KAFKA_LOG_DIR}:${KAFKA_LOG_DIR} \
  --env KAFKA_BROKER_ID=%i \
  --env KAFKA_LOG_DIRS=${KAFKA_LOG_DIR} \
- --env KAFKA_ZK=zk://zookeeper.${CLUSTER}.${ENV}.local/kafka/${CLUSTER}/${ENV} \
+ --env KAFKA_ZK=zookeeper.${CLUSTER}.${ENV}.local:2181/kafka/${CLUSTER}/${ENV} \
  --dns=${COREOS_PRIVATE_IPV4} \
  --dns-search=${CLUSTER}.${ENV}.local \
  andrewrothstein/docker-kafka

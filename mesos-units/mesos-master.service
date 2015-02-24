@@ -1,7 +1,7 @@
 [Unit]
 Description=Mesos Master
 After=skydns.service
-After=docker.servicee
+After=docker.service
 Requires=skydns.service
 Requires=docker.service
 

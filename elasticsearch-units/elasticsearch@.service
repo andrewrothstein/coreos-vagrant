@@ -2,11 +2,16 @@
 Description=ElasticSearch service
 After=docker.service
 After=etcd.service
+After=skydns.service
 Requires=docker.service
 Requires=etcd.service
+Requires=skydns.service
 
 [Service]
 EnvironmentFile=/etc/environment
+
+Environment="ENV=drewfus"
+Environment="CLUSTER=dev"
 
 Restart=always
 RestartSec=10s
@@ -19,18 +24,7 @@ ExecStartPre=/usr/bin/mkdir -p /data/elasticsearch
 ExecStartPre=/usr/bin/docker run --rm -v /opt/bin:/opt/bin ibuildthecloud/systemd-docker
 ExecStartPre=/usr/bin/docker pull andrewrothstein/docker-elasticsearch
 
-ExecStart=/bin/bash -c '\
- curl -f ${COREOS_PRIVATE_IPV4}:4001/v2/keys/services/elasticsearch; \
- if [ "$?" = "0" ]; \
- then \
-  UNICAST_HOSTS=$(etcdctl ls --recursive /services/elasticsearch \
-  		 | sed "s/\/services\/elasticsearch\///g" \
-		 | sed "s/$/:9300/" \
-		 | paste -s -d","); \
- else \
-  UNICAST_HOSTS=""; \
- fi; \
- /opt/bin/systemd-docker run \
+ExecStart=/opt/bin/systemd-docker run \
   --name %p-%i \
   --publish 9200:9200 \
   --publish 9300:9300 \
@@ -41,7 +35,7 @@ ExecStart=/bin/bash -c '\
   --cluster.name=escluster \
   --network.publish_host=${COREOS_PRIVATE_IPV4} \
   --discovery.zen.ping.multicast.enabled=false \
-  --discovery.zen.ping.unicast.hosts=$UNICAST_HOSTS'
+  --discovery.zen.ping.unicast.hosts=elasticsearch-1.dev.drewfus.local:9200,elasticearch-2.dev.drewfus.local,elasticsearch-3.dev.drewfus.local
 
 [Install]
 WantedBy=multi-user.target

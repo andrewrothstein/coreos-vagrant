@@ -1,22 +1,33 @@
 [Unit]
 Description=ElasticSearch discovery service
 BindsTo=elasticsearch@%i.service
+After=elasticsearch@%i.service
+After=etcd.service
+After=skydns.service
+Requires=etcd.service
+Requires=skydns.service
 
 [Service]
 EnvironmentFile=/etc/environment
 
-ExecStart=/bin/bash -c '\
-  while true; do \
-      curl -f ${COREOS_PRIVATE_IPV4}:9200; \
-          if [ "$?" = "0" ]; then \
-	        etcdctl set /services/elasticsearch/${COREOS_PRIVATE_IPV4} \'{"http_port": 9200, "transport_port": 9300}\' --ttl 60; \
-		    else \
-		          etcdctl rm /services/elasticsearch/${COREOS_PRIVATE_IPV4}; \
-			      fi; \
-			          sleep 45; \
-				    done'
+Environment="ENV=drewfus"
+Environment="CLUSTER=dev"
 
-ExecStop=/usr/bin/etcdctl rm /services/elasticsearch/${COREOS_PRIVATE_IPV4}
+Environment="ELASTICSEARCH_CLIENT_PORT=9200"
+
+ExecStartPre=/usr/bin/printf "Announcing: /skydns/local/${ENV}/${CLUSTER}/elasticsearch-%i:\n"
+ExecStartPre=/usr/bin/etcdctl set --ttl 60 /skydns/local/${ENV}/${CLUSTER}/elasticsearch-%i \
+ "{\"host\":\"%m.hosts.${CLUSTER}.${ENV}.local\",\
+   \"port\":${ELASTICSEARCH_CLIENT_PORT}}"
+ExecStartPre=/usr/bin/etcdctl get /skydns/local/${ENV}/${CLUSTER}/elasticsearch-%i
+
+ExecStartPre=/usr/bin/printf "Announcing: /skydns/local/${ENV}/${CLUSTER}/elasticsearch/%i:\n"
+ExecStartPre=/usr/bin/etcdctl set --ttl 60 /skydns/local/${ENV}/${CLUSTER}/elasticsearch/%i \
+ "{\"host\":\"%m.hosts.${CLUSTER}.${ENV}.local\",\
+   \"port\":${ELASTICSEARCH_CLIENT_PORT}}"
+ExecStartPre=/usr/bin/etcdctl get /skydns/local/${ENV}/${CLUSTER}/elasticsearch/%i
+
+ExecStart=/usr/bin/printf "finished %p announcements\n"
 
 [X-Fleet]
 X-ConditionMachineOf=elasticsearch@%i.service

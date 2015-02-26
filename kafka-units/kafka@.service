@@ -12,7 +12,7 @@ Environment="ENV=drewfus"
 Environment="CLUSTER=dev"
 Environment="KAFKA_LOG_DIR=/data/kafka/log"
 
-Type=Simple
+Type=notify
 
 Restart=always
 RestartSec=10s
@@ -33,7 +33,7 @@ ExecStartPre=-/usr/bin/docker pull andrewrothstein/docker-zookeeper:latest
 # install systemd-docker
 ExecStartPre=/usr/bin/docker run --rm -v /opt/bin:/opt/bin ibuildthecloud/systemd-docker
 
-# make the ZK location...
+# make the ZK location...wish kafka would do this for me!
 ExecStartPre=/opt/bin/systemd-docker run --rm \
  --dns=${COREOS_PRIVATE_IPV4} \
  --dns-search=${CLUSTER}.${ENV}.local \
@@ -46,7 +46,7 @@ ExecStartPre=/opt/bin/systemd-docker run --rm \
 ExecStart=/opt/bin/systemd-docker run --rm \
  --name kafka-broker-%i \
  --hostname=%p-%i.${CLUSTER}.${ENV}.local \
- --publish 9092:9092 \
+ --publish ${COREOS_PRIVATE_IPV4}:9092:9092 \
  --volume ${KAFKA_LOG_DIR}:${KAFKA_LOG_DIR} \
  --env KAFKA_BROKER_ID=%i \
  --env KAFKA_LOG_DIRS=${KAFKA_LOG_DIR} \

@@ -31,9 +31,11 @@ ExecStartPre=-/usr/bin/docker pull andrewrothstein/docker-mesos
 ExecStartPre=/usr/bin/docker run --rm -v /opt/bin:/opt/bin ibuildthecloud/systemd-docker
 
 # Assumes mesos-master is deployed globally as well
-ExecStart=/opt/bin/systemd-docker run --rm \
+# see MESOS-809
+ExecStart=/opt/bin/systemd-docker run \
+ --rm \
  --name mesos-slave \
- --publish 5051:5051 \
+ --publish ${COREOS_PRIVATE_IPV4}:5051:5051 \
  --dns=${COREOS_PRIVATE_IPV4} \
  --dns-search=${CLUSTER}.${ENV}.local \
  andrewrothstein/docker-mesos mesos-slave \

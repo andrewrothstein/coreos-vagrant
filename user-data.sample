@@ -16,6 +16,10 @@ coreos:
   flannel:
     interface: $public_ipv4
   units:
+    #- name: etcd.service
+    #  command: start
+    # To use etcd2, comment out the above service and uncomment these
+    # Note: this requires a release that contains etcd2
     - name: etcd2.service
       command: start
     - name: fleet.service

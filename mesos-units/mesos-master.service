@@ -1,14 +1,18 @@
 [Unit]
 Description=Mesos Master
-After=skydns.service
+
 After=docker.service
-Requires=skydns.service
 Requires=docker.service
+
+After=skydns.service
+Requires=skydns.service
+
+After=baseconfig.service
+Requires=baseconfig.service
 
 [Service]
 EnvironmentFile=/etc/environment
-Environment=ENV=drewfus
-Environment=CLUSTER=dev
+EnvironmentFile=/etc/cluster-environment
 
 Type=notify
 NotifyAccess=all
@@ -24,9 +28,6 @@ ExecStartPre=/usr/bin/mkdir -p /data/mesos-master/{work,log}
 
 # pull app docker image
 ExecStartPre=-/usr/bin/docker pull andrewrothstein/docker-mesos
-
-# install systemd-docker
-ExecStartPre=/usr/bin/docker run --rm -v /opt/bin:/opt/bin ibuildthecloud/systemd-docker
 
 # see MESOS-809
 ExecStart=/opt/bin/systemd-docker run \

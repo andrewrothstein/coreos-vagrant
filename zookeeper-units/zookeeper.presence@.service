@@ -3,6 +3,7 @@ Description=Zookeeper Presence
 BindTo=zookeeper@%i.service
 After=zookeeper@%i.service
 After=etcd.service
+After=baseconfig.service
 
 [Service]
 Type=simple
@@ -10,9 +11,7 @@ Restart=always
 RestartSec=30
 
 EnvironmentFile=/etc/environment
-
-Environment="ENV=drewfus"
-Environment="CLUSTER=dev"
+EnvironmentFile=/etc/cluster-environment
 
 Environment="ZOOKEEPER_CLIENT_PORT=2181"
 

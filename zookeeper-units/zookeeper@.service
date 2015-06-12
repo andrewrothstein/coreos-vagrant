@@ -1,16 +1,21 @@
 [Unit]
 Description=Zookeeper service
+
 After=skydns.service
-After=docker.service
-After=etcd.service
 Requires=skydns.service
+
+After=docker.service
 Requires=docker.service
-Requires=etcd.service
+
+After=etcd2.service
+Requires=etcd2.service
+
+After=baseconfig.service
+Requires=baseconfig.service
 
 [Service]
 EnvironmentFile=/etc/environment
-Environment="ENV=drewfus"
-Environment="CLUSTER=dev"
+EnvironmentFile=/etc/cluster-environment
 
 Type=notify
 NotifyAccess=all
@@ -26,9 +31,6 @@ ExecStartPre=/usr/bin/mkdir -p /data/zookeeper
 
 # pull app docker image
 ExecStartPre=-/usr/bin/docker pull andrewrothstein/docker-zookeeper
-
-# install systemd-docker
-ExecStartPre=/usr/bin/docker run --rm -v /opt/bin:/opt/bin ibuildthecloud/systemd-docker
 
 # bombs away
 ExecStart=/opt/bin/systemd-docker run --rm \

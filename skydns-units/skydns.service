@@ -1,15 +1,18 @@
 [Unit]
 Description=SkyDNS
+
 After=docker.service
-After=etcd.service
 Requires=docker.service
-Requires=etcd.service
+
+After=etcd2.service
+Requires=etcd2.service
+
+After=baseconfig.service
+Requires=baseconfig.service
 
 [Service]
 EnvironmentFile=/etc/environment
-
-Environment="ENV=drewfus"
-Environment="CLUSTER=dev"
+EnvironmentFile=/etc/cluster-environment
 
 Type=notify
 NotifyAccess=all
@@ -21,10 +24,7 @@ TimeoutStartSec=0
 TimeoutStopSec=15
 
 # pull app docker image
-ExecStartPre=-/usr/bin/docker pull andrewrothstein/skydns
-
-# install systemd-docker
-ExecStartPre=/usr/bin/docker run --rm -v /opt/bin:/opt/bin ibuildthecloud/systemd-docker
+ExecStartPre=-/usr/bin/docker pull skynetservices/skydns:latest
 
 ExecStartPre=/usr/bin/etcdctl set \
  /skydns/local/${ENV}/${CLUSTER}/hosts/%m \
@@ -37,7 +37,7 @@ ExecStart=/opt/bin/systemd-docker run \
  -p ${COREOS_PRIVATE_IPV4}:53:53/udp \
  -e ETCD_MACHINES=http://${COREOS_PRIVATE_IPV4}:4001 \
  -e SKYDNS_DOMAIN=${CLUSTER}.${ENV}.local \
-andrewrothstein/skydns \
+ skynetservices/skydns:latest \
  -addr 0.0.0.0:53 \
  -local "%m.hosts.${CLUSTER}.${ENV}.local"
 

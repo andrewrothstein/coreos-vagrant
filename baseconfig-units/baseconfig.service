@@ -1,0 +1,25 @@
+[Unit]
+Description=Lay down base config
+
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+
+ExecStartPre=/bin/sh -c 'echo ENV=drewfus >> /etc/cluster-environment'
+ExecStartPre=/bin/sh -c 'echo CLUSTER=dev >> /etc/cluster-environment'
+
+# system-docker
+ExecStart=/usr/bin/docker run --rm -v /opt/bin:/opt/bin ibuildthecloud/systemd-docker
+
+# pull base images
+ExecStart=-/usr/bin/docker pull skynetservices/skydns:latest
+ExecStart=-/usr/bin/docker pull andrewrothstein/docker-zookeeper
+ExecStart=-/usr/bin/docker pull andrewrothstein/docker-mesos
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+Global=true

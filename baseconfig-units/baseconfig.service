@@ -7,7 +7,7 @@ Requires=docker.service
 [Service]
 Type=oneshot
 
-ExecStartPre=/bin/sh -c 'echo ENV=drewfus >> /etc/cluster-environment'
+ExecStartPre=/bin/sh -c 'echo ENV=drewfus > /etc/cluster-environment'
 ExecStartPre=/bin/sh -c 'echo CLUSTER=dev >> /etc/cluster-environment'
 
 # system-docker

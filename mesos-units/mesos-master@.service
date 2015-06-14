@@ -24,7 +24,8 @@ TimeoutStartSec=0
 TimeoutStopSec=15
 
 # configure host storage directory
-ExecStartPre=/usr/bin/mkdir -p /data/mesos-master/{work,log}
+ExecStartPre=/usr/bin/mkdir -p /data/mesos-master/work
+ExecStartPre=/usr/bin/mkdir -p /data/mesos-master/log
 
 # pull app docker image
 ExecStartPre=-/usr/bin/docker pull andrewrothstein/docker-mesos
@@ -38,7 +39,8 @@ ExecStart=/opt/bin/systemd-docker run \
  --volume /data/mesos-master/log:/data/mesos-master/log \
  --dns=${COREOS_PRIVATE_IPV4} \
  --dns-search=${CLUSTER}.${ENV}.local \
- andrewrothstein/docker-mesos mesos-master \
+ andrewrothstein/docker-mesos mesos master \
+  --public-ip=${COREOS_PUBLIC_IPV4} \
   --cluster=${CLUSTER}.${ENV} \
   --work_dir=/data/mesos-master/${CLUSTER}/${ENV}/work \
   --log_dir=/data/mesos-master/${CLUSTER}/${ENV}/log \
@@ -49,4 +51,4 @@ ExecStart=/opt/bin/systemd-docker run \
 WantedBy=multi-user.target
 
 [X-Fleet]
-Global=true
+X-Conflicts=%p@*.service

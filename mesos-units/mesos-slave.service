@@ -7,8 +7,8 @@ Requires=docker.service
 After=skydns.service
 Requires=skydns.service
 
-After=mesos-master.service
-Requires=mesos-master.service
+After=baseconfig.service
+Requires=baseconfig.service
 
 [Service]
 EnvironmentFile=/etc/environment
@@ -24,7 +24,8 @@ TimeoutStartSec=0
 TimeoutStopSec=15
 
 # configure host storage directory
-ExecStartPre=/usr/bin/mkdir -p /data/mesos-slave/${CLUSTER}/${ENV}/{work,log}
+ExecStartPre=/usr/bin/mkdir -p /data/mesos-slave/${CLUSTER}/${ENV}/work
+ExecStartPre=/usr/bin/mkdir -p /data/mesos-slave/${CLUSTER}/${ENV}/log
 
 # pull app docker image
 ExecStartPre=-/usr/bin/docker pull andrewrothstein/docker-mesos

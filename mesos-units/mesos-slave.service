@@ -36,6 +36,8 @@ ExecStart=/opt/bin/systemd-docker run \
  --rm \
  --name mesos-slave \
  --publish ${COREOS_PRIVATE_IPV4}:5051:5051 \
+ --volume /data/mesos-slave/work:/data/mesos-slave/work \
+ --volume /data/mesos-slave/log:/data/mesos-slave/log \
  --dns=${COREOS_PRIVATE_IPV4} \
  --dns-search=${CLUSTER}.${ENV}.local \
  andrewrothstein/docker-mesos mesos-slave \

@@ -35,8 +35,8 @@ ExecStart=/opt/bin/systemd-docker run \
  --rm \
  --name mesos-master \
  --publish ${COREOS_PRIVATE_IPV4}:5050:5050 \
- --volume /data/mesos-master/work:/data/mesos-master/work \
- --volume /data/mesos-master/log:/data/mesos-master/log \
+ --volume /data/mesos-master/${CLUSTER}/${ENV}/work:/data/mesos-master/${CLUSTER}/${ENV}/work \
+ --volume /data/mesos-master/${CLUSTER}/${ENV}/log:/data/mesos-master/${CLUSTER}/${ENV}/log \
  --dns=${COREOS_PRIVATE_IPV4} \
  --dns-search=${CLUSTER}.${ENV}.local \
  andrewrothstein/docker-mesos mesos-master \

@@ -43,7 +43,7 @@ ExecStart=/opt/bin/systemd-docker run \
  andrewrothstein/docker-mesos mesos-slave \
   --work_dir=/data/mesos-slave/${CLUSTER}/${ENV}/work \
   --log_dir=/data/mesos-slave/${CLUSTER}/${ENV}/log \
-  --master=zk://zookeeper.${CLUSTER}.${ENV}.local:2181/mesos/${CLUSTER}/${ENV}
+  --master=zk://zookeeper-1.${CLUSTER}.${ENV}.local:2181,zookeeper-2.${CLUSTER}.${ENV}.local:2181,zookeeper-3.${CLUSTER}.${ENV}.local:2181/mesos/${CLUSTER}/${ENV}
 
 [Install]
 WantedBy=multi-user.target
